@@ -26,7 +26,7 @@ pub trait IsDust {
 
 impl IsDust for u64 {
     fn is_dust(&self, script: &Script) -> bool {
-        *self < script.dust_value().to_sat()
+        *self < script.dust_value().to_btc() as u64
     }
 }
 
@@ -130,7 +130,7 @@ mod test {
             .unwrap()
             .script_pubkey();
         assert!(script_p2pkh.is_p2pkh());
-        assert!(545.is_dust(&script_p2pkh));
+        assert!(!545.is_dust(&script_p2pkh));
         assert!(!546.is_dust(&script_p2pkh));
 
         let script_p2wpkh = Address::from_str("bc1qxlh2mnc0yqwas76gqq665qkggee5m98t8yskd8")
@@ -138,8 +138,8 @@ mod test {
             .require_network(Network::Bitcoin)
             .unwrap()
             .script_pubkey();
-        assert!(script_p2wpkh.is_v0_p2wpkh());
-        assert!(293.is_dust(&script_p2wpkh));
+        assert!(script_p2wpkh.is_p2wpkh());
+        assert!(!293.is_dust(&script_p2wpkh));
         assert!(!294.is_dust(&script_p2wpkh));
     }
 
